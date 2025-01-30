@@ -14,7 +14,7 @@
     <name>projetowebback</name>
     <description>projetowebback</description>
     <properties>
-        <java.version>23</java.version> <!-- Alterei para Java 17, que é mais compatível com Spring Boot 3.x -->
+        <java.version>23</java.version> <!-- Definindo o Java para 23 -->
     </properties>
     <dependencies>
         <!-- Spring Boot Starter Web (para controllers e endpoints HTTP) -->
@@ -43,6 +43,20 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Hibernate Validator (necessário para validação de dados com @Valid, @NotEmpty, etc.) -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.2.0.Final</version>
+        </dependency>
+
+        <!-- Dependência de validação (para anotações como @NotEmpty, @Size, etc.) -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+
         <!-- Spring Boot Starter Test (para testes) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -50,12 +64,18 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Banco de Dados H2 para testes e desenvolvimento -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>3.1.0</version> <!-- Verifique a versão mais recente, se necessário -->
+        </dependency>
     </dependencies>
 
     <build>
@@ -66,8 +86,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>23</source> <!-- Definindo a versão para 23, compatível com o Java 23 -->
+                    <target>23</target> <!-- Definindo a versão para 23 -->
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
