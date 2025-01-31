@@ -1,15 +1,50 @@
-package br.com.ifba.controller; // Pacote onde a classe está localizada
+package br.com.ifba.controller; // Define o pacote onde esta classe está localizada.
 
-// Importa as anotações do Spring para construir o controlador REST
-import org.springframework.web.bind.annotation.*;
+import br.com.ifba.dto.UsuarioGetResponseDto; // Importa a classe DTO usada para retornar os dados do usuário.
+import br.com.ifba.dto.UsuarioPostRequestDto; // Importa a classe DTO usada para receber os dados do usuário na requisição.
+import br.com.ifba.service.UsuarioIService; // Importa a interface do serviço responsável pela lógica de negócio do usuário.
+import jakarta.validation.Valid; // Importa a anotação para validar os dados da requisição.
+import lombok.RequiredArgsConstructor; // Importa a anotação do Lombok para gerar um construtor automático com dependências final.
+import org.springframework.web.bind.annotation.*; // Importa anotações para definir um controlador REST.
 
-@RestController // Anotação que indica que esta classe é um controlador REST (vai responder a requisições HTTP)
-@RequestMapping("/usuarios") // Define a URL base para as requisições que este controlador vai responder
-public class UsuarioController { // Definição da classe controladora para gerenciar os usuários
+import java.util.List; // Importa a classe List para manipular listas de usuários.
 
-    // Mapeia uma requisição GET para o caminho "/usuarios/{id}", onde {id} é um parâmetro variável
-    @GetMapping("/{id}")
-    public String getUsuario(@PathVariable Long id) { // O parâmetro id será extraído da URL da requisição
-        return "Usuário com ID " + id; // Retorna uma mensagem com o ID do usuário
+@RestController // Indica que esta classe é um controlador REST no Spring Boot, tornando-a responsável por lidar com requisições HTTP.
+@RequestMapping("/usuarios") // Define o caminho base da API para este controlador (exemplo: http://localhost:8080/usuarios).
+@RequiredArgsConstructor // Lombok gera automaticamente um construtor com os atributos final, facilitando a injeção de dependências.
+public class UsuarioController {
+
+    private final UsuarioIService usuarioService; // Dependência do serviço de usuário, injetada automaticamente pelo Lombok.
+
+    /**
+     * Endpoint para cadastrar um novo usuário.
+     * @param usuarioPostRequestDto Objeto contendo os dados do usuário enviados na requisição.
+     * @return Retorna os dados do usuário cadastrado.
+     */
+    @PostMapping // Mapeia requisições HTTP POST para este método.
+    public UsuarioGetResponseDto cadastrarUsuario(@Valid @RequestBody UsuarioPostRequestDto usuarioPostRequestDto) {
+        // O @Valid valida os campos do DTO antes de chamar o serviço.
+        return usuarioService.salvar(usuarioPostRequestDto); // Chama o serviço para salvar o usuário e retorna o resultado.
+    }
+
+    /**
+     * Endpoint para buscar um usuário pelo ID.
+     * @param id Identificador do usuário a ser buscado.
+     * @return Retorna os dados do usuário correspondente ao ID informado.
+     */
+    @GetMapping("/{id}") // Mapeia requisições HTTP GET com um parâmetro na URL (ID do usuário).
+    public UsuarioGetResponseDto buscarUsuario(@PathVariable Long id) {
+        // O @PathVariable extrai o ID da URL e passa para o método.
+        return usuarioService.buscarPorId(id); // Chama o serviço para buscar o usuário e retorna os dados.
+    }
+
+    /**
+     * Endpoint para listar todos os usuários cadastrados.
+     * @return Retorna uma lista de usuários cadastrados no sistema.
+     */
+    @GetMapping // Mapeia requisições HTTP GET para listar todos os usuários.
+    public List<UsuarioGetResponseDto> listarUsuarios() {
+        // Chama o serviço para listar todos os usuários cadastrados e retorna a lista.
+        return usuarioService.listarTodos();
     }
 }

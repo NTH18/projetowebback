@@ -1,11 +1,14 @@
-package br.com.ifba.exception; // Pacote onde a classe de resposta de erro está localizada
+package br.com.ifba.exception;
 
-// Importa as anotações do Lombok para simplificação de código
-import lombok.AllArgsConstructor; // Para gerar um construtor com todos os parâmetros
-import lombok.Getter; // Para gerar automaticamente o método getter para o campo 'message'
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@Getter // Lombok irá gerar automaticamente o método getter para o campo 'message'
-@AllArgsConstructor // Lombok irá gerar um construtor com todos os parâmetros da classe
+import java.time.LocalDateTime; // Para incluir o timestamp
+
+@Getter
+@AllArgsConstructor
 public class ErrorResponse {
-    private String message; // Campo para armazenar a mensagem de erro
+    private LocalDateTime timestamp; // Data e hora do erro
+    private int status; // Status HTTP
+    private String message; // Mensagem de erro
 }
