@@ -1,11 +1,14 @@
 package br.com.ifba.controller; // Define o pacote onde esta classe está localizada.
 
+import br.com.ifba.client.UsuarioApiClient;
 import br.com.ifba.dto.UsuarioGetResponseDto; // Importa a classe DTO usada para retornar os dados do usuário.
 import br.com.ifba.dto.UsuarioPostRequestDto; // Importa a classe DTO usada para receber os dados do usuário na requisição.
 import br.com.ifba.service.UsuarioIService; // Importa a interface do serviço responsável pela lógica de negócio do usuário.
 import jakarta.validation.Valid; // Importa a anotação para validar os dados da requisição.
 import lombok.RequiredArgsConstructor; // Importa a anotação do Lombok para gerar um construtor automático com dependências final.
 import org.springframework.web.bind.annotation.*; // Importa anotações para definir um controlador REST.
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List; // Importa a classe List para manipular listas de usuários.
 
@@ -16,6 +19,15 @@ public class UsuarioController {
 
     private final UsuarioIService usuarioService; // Dependência do serviço de usuário, injetada automaticamente pelo Lombok.
 
+    // Declara uma instância do cliente HTTP responsável por consumir uma API externa de usuários.
+    private final UsuarioApiClient usuarioApiClient;
+
+    // Define um endpoint para buscar um usuário em uma API externa com base no ID informado na URL.
+    @GetMapping("/externo/{id}")
+    public UsuarioGetResponseDto buscarUsuarioExterno(@PathVariable Long id) {
+        // Faz uma chamada à API externa para obter os dados do usuário correspondente ao ID.
+        return usuarioApiClient.buscarUsuarioExterno(id);
+    }
     /**
      * Endpoint para cadastrar um novo usuário.
      * @param usuarioPostRequestDto Objeto contendo os dados do usuário enviados na requisição.
@@ -37,14 +49,12 @@ public class UsuarioController {
         // O @PathVariable extrai o ID da URL e passa para o método.
         return usuarioService.buscarPorId(id); // Chama o serviço para buscar o usuário e retorna os dados.
     }
-
     /**
      * Endpoint para listar todos os usuários cadastrados.
      * @return Retorna uma lista de usuários cadastrados no sistema.
      */
-    @GetMapping // Mapeia requisições HTTP GET para listar todos os usuários.
-    public List<UsuarioGetResponseDto> listarUsuarios() {
-        // Chama o serviço para listar todos os usuários cadastrados e retorna a lista.
-        return usuarioService.listarTodos();
+    @GetMapping
+    public Page<UsuarioGetResponseDto> listarTodos(Pageable pageable) {
+        return usuarioService.listarTodos(pageable);
     }
 }
