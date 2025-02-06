@@ -1,16 +1,42 @@
-package br.com.ifba.mapper; // Pacote onde a classe de utilitário está localizada
+package br.com.ifba.mapper;
 
-// Importa a classe ObjectMapper do Jackson para conversão de objetos
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration;
+import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.stereotype.Component;
 
-public class ObjectMapperUtil { // Classe utilitária para realizar a conversão de objetos
+import java.util.List;
+import java.util.stream.Collectors;
 
-    // Cria uma instância estática do ObjectMapper, que será usada para as conversões
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+@Component // Indica que esta classe é um componente gerenciado pelo Spring.
+public class ObjectMapperUtil {
+    private static final ModelMapper MODEL_MAPPER;
 
-    // Método genérico que converte um objeto de um tipo para outro
-    public static <T> T convert(Object source, Class<T> targetClass) {
-        // Usa o ObjectMapper para converter o objeto 'source' para o tipo de destino 'targetClass'
-        return MAPPER.convertValue(source, targetClass);
+    static {
+        MODEL_MAPPER = new ModelMapper(); // Inicializa a instância do ModelMapper no bloco estático.
+    }
+
+    public <Input, Output> Output map(final Input object,
+                                      final Class<Output> clazz) {
+        // Método genérico para mapear um objeto de entrada para um objeto de saída.
+
+        MODEL_MAPPER.getConfiguration()
+                .setAmbiguityIgnored(true) // Ignora ambiguidades nos mapeamentos.
+                .setMatchingStrategy(MatchingStrategies.STRICT) // Define a estratégia de correspondência como estrita.
+                .setFieldMatchingEnabled(true) // Habilita a correspondência de campos.
+                .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE); // Permite acesso a campos privados.
+
+        Output c = MODEL_MAPPER.map(object, clazz); // Converte o objeto de entrada para a classe de saída especificada.
+
+        return c; // Retorna o objeto convertido.
+    }
+
+    public <Input, Output> List<Output> mapAll(final List<Input> list, final Class<Output> clazz) {
+        // Método para converter uma lista de objetos de entrada para uma lista de objetos de saída.
+
+        return list.stream()
+                .map(item -> this.map(item, clazz)) // Mapeia cada elemento da lista usando o método 'map'.
+                .collect(Collectors.toList()); // Coleta os elementos convertidos em uma nova lista.
     }
 }
+
